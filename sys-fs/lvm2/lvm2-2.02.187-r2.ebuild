@@ -100,7 +100,6 @@ src_prepare() {
 
 	sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
 	
-	# You deleted some stuff to do with device-mapper only. Might have to re add that back in and remove the udev.
 
 	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
