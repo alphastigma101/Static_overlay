@@ -70,21 +70,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.186-udev_remove_unsupported_option.patch #700160
 )
 
-pkg_setup() {
-	local CONFIG_CHECK="~SYSVIPC"
-
-	if use udev; then
-		local WARNING_SYSVIPC="CONFIG_SYSVIPC:\tis not set (required for udev sync)\n"
-		if linux_config_exists; then
-			local uevent_helper_path=$(linux_chkconfig_string UEVENT_HELPER_PATH)
-			if [[ -n "${uevent_helper_path}" ]] && [[ "${uevent_helper_path}" != '""' ]]; then
-				ewarn "It's recommended to set an empty value to the following kernel config option:"
-				ewarn "CONFIG_UEVENT_HELPER_PATH=${uevent_helper_path}"
-			fi
-		fi
-	fi
-
-	check_extra_config
 
 	# 1. Genkernel no longer copies /sbin/lvm blindly.
 	if use static; then
