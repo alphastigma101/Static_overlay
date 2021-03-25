@@ -91,7 +91,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	#default
+	default
 
 	#sed -i \
 		#-e "1iAR = $(tc-getAR)" \
