@@ -133,6 +133,7 @@ src_configure() {
 		$(use_enable !device-mapper-only fsadm)
 		$(use_enable !device-mapper-only lvmetad)
 		$(use_enable !device-mapper-only lvmpolld)
+		$(usex device-mapper-only --disable-udev-systemd-background-jobs '')
 
 		# This only causes the .static versions to become available
 		$(usex static --enable-static_link '')
@@ -208,7 +209,7 @@ src_install() {
 		emake V=1 DESTDIR="${D}" ${inst}
 	done
 	
-	#newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
+	newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
 	newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
 	
 	if use !device-mapper-only ; then
