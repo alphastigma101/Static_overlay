@@ -67,7 +67,6 @@ CDEPEND="
 		>=media-libs/mesa-18[X(+),egl,gbm]
 		>=media-libs/libepoxy-1.5.4[X,egl(+)]
 	)
-	udev? ( virtual/libudev:= )
 	unwind? ( sys-libs/libunwind )
 	wayland? (
 		>=dev-libs/wayland-1.3.0
@@ -157,7 +156,6 @@ pkg_setup() {
 		$(use_enable xnest)
 		$(use_enable xorg)
 		$(use_enable xvfb)
-		$(use_enable udev config-udev)
 		$(use_with doc doxygen)
 		$(use_with doc xmlto)
 		$(use_with systemd systemd-daemon)
