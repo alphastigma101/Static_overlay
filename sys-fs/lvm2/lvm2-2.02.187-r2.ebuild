@@ -212,14 +212,14 @@ src_install() {
 	#newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
 	#newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
 	
-	if use !device-mapper-only ; then
+	#if use !device-mapper-only ; then
 		#newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
-		newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
-		newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
-		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
-		newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
-		newinitd "${FILESDIR}"/lvmpolld.initd-2.02.183 lvmpolld
-	fi
+		#newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
+		#newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
+		#newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
+		#newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
+		#newinitd "${FILESDIR}"/lvmpolld.initd-2.02.183 lvmpolld
+	#fi
 
 	
 	if use sanlock; then
