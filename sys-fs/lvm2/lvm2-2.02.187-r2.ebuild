@@ -208,22 +208,22 @@ src_install() {
 		emake V=1 DESTDIR="${D}" ${inst}
 	done
 
-	#newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
-	#newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
+	newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
+	newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
 
-	#if use !device-mapper-only ; then
-		#newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
-		#newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
-		#newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
+	if use !device-mapper-only ; then
+		newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
+		newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
+		newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
 
-		#newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
-		#newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
-		#newinitd "${FILESDIR}"/lvmpolld.initd-2.02.183 lvmpolld
-	#fi
-
-	#if use sanlock; then
-		#newinitd "${FILESDIR}"/lvmlockd.initd-2.02.166-r1 lvmlockd
-	#fi
+		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
+		newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
+		newinitd "${FILESDIR}"/lvmpolld.initd-2.02.183 lvmpolld
+	fi
+	
+	if use sanlock; then
+		newinitd "${FILESDIR}"/lvmlockd.initd-2.02.166-r1 lvmlockd
+	fi
 
 	if use static-libs; then
 		dolib.a libdm/ioctl/libdevmapper.a
