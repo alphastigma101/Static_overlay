@@ -1,0 +1,11 @@
+<repositories encoding="unicode" version="1.1">
+  <repo priority="50" quality="experimental">
+    <name>initramfs_custom</name>
+    <description>These are ebuild files that are needed when creating custom initramfs for gentoo; more will be added later on </description>
+    <owner>
+      <email>12logan.welty@gmail.com</email>
+      <name>alphastigma</name>
+    </owner>
+    <source type="git">https://github.com/alphastigma101/initramfs_custom.git</source>
+  </repo>
+</repositories>
