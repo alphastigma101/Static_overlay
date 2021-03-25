@@ -70,13 +70,13 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.186-udev_remove_unsupported_option.patch #700160
 )
 
+# 1. Genkernel no longer copies /sbin/lvm blindly.
+if use static; then
+	elog "Warning, we no longer overwrite /sbin/lvm and /sbin/dmsetup with"
+	elog "their static versions. If you need the static binaries,"
+	elog "you must append .static to the filename!"
+fi
 
-	# 1. Genkernel no longer copies /sbin/lvm blindly.
-	if use static; then
-		elog "Warning, we no longer overwrite /sbin/lvm and /sbin/dmsetup with"
-		elog "their static versions. If you need the static binaries,"
-		elog "you must append .static to the filename!"
-	fi
 }
 
 src_prepare() {
