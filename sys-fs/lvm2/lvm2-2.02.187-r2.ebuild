@@ -100,13 +100,6 @@ src_prepare() {
 
 	sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
 
-	if use udev && ! use device-mapper-only; then
-		sed -i -e '/use_lvmetad =/s:0:1:' conf/example.conf.in || die #514196
-		elog "Notice that \"use_lvmetad\" setting is enabled with USE=\"udev\" in"
-		elog "/etc/lvm/lvm.conf, which will require restart of udev, lvm, and lvmetad"
-		elog "if it was previously disabled."
-	fi
-
 	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
 	# Don't install thin man page when not requested
