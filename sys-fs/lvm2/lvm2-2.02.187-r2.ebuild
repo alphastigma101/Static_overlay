@@ -104,11 +104,11 @@ src_prepare() {
 	#sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
 	# Don't install thin man page when not requested
-	if ! use thin ; then
-		sed -i -e 's/^\(MAN7+=.*\) $(LVMTHINMAN) \(.*\)$/\1 \2/' man/Makefile.in || die
-	fi
+	#if ! use thin ; then
+		#sed -i -e 's/^\(MAN7+=.*\) $(LVMTHINMAN) \(.*\)$/\1 \2/' man/Makefile.in || die
+	#fi
 
-	eautoreconf
+	#eautoreconf
 }
 
 src_configure() {
