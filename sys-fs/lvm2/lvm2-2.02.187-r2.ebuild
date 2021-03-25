@@ -12,9 +12,9 @@ SRC_URI="ftp://sourceware.org/pub/lvm2/${PN/lvm/LVM}.${PV}.tgz
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="readline static static-libs systemd lvm2create_initrd sanlock selinux +thin device-mapper-only"
+IUSE="readline static static-libs systemd lvm2create_initrd sanlock selinux +udev +thin device-mapper-only"
 REQUIRED_USE="device-mapper-only? ( !lvm2create_initrd !sanlock !thin )
-	systemd? (  )"
+	systemd? ( )"
 
 DEPEND_COMMON="
 	dev-libs/libaio[static-libs?]
@@ -22,8 +22,8 @@ DEPEND_COMMON="
 	!static? ( dev-libs/libaio[static-libs?] )
 	readline? ( sys-libs/readline:0= )
 	sanlock? ( sys-cluster/sanlock )
-	systemd? ( >=sys-apps/systemd-205:0= )
-"
+	systemd? ( >=sys-apps/systemd-205:0= )"
+	
 # /run is now required for locking during early boot. /var cannot be assumed to
 # be available -- thus, pull in recent enough baselayout for /run.
 # This version of LVM is incompatible with cryptsetup <1.1.2.
@@ -67,11 +67,14 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.184-dmeventd-no-idle-exit.patch
 	#"${FILESDIR}"/${PN}-2.02.184-allow-reading-metadata-with-invalid-creation_time.patch #682380 # merged upstream
 	"${FILESDIR}"/${PN}-2.02.184-mksh_build.patch #686652
+	"${FILESDIR}"/${PN}-2.02.186-udev_remove_unsupported_option.patch #700160
 )
 
 pkg_setup() {
 	local CONFIG_CHECK="~SYSVIPC"
 
+	if use udev; then
+		local WARNING_SYSVIPC="CONFIG_SYSVIPC:\tis not set (required for udev sync)\n"
 		if linux_config_exists; then
 			local uevent_helper_path=$(linux_chkconfig_string UEVENT_HELPER_PATH)
 			if [[ -n "${uevent_helper_path}" ]] && [[ "${uevent_helper_path}" != '""' ]]; then
@@ -79,6 +82,7 @@ pkg_setup() {
 				ewarn "CONFIG_UEVENT_HELPER_PATH=${uevent_helper_path}"
 			fi
 		fi
+	fi
 
 	check_extra_config
 
@@ -93,22 +97,28 @@ pkg_setup() {
 src_prepare() {
 	default
 
-	#sed -i \
-		#-e "1iAR = $(tc-getAR)" \
-		#-e "s:CC ?= @CC@:CC = $(tc-getCC):" \
-		#make.tmpl.in || die #444082
+	sed -i \
+		-e "1iAR = $(tc-getAR)" \
+		-e "s:CC ?= @CC@:CC = $(tc-getCC):" \
+		make.tmpl.in || die #444082
 
-	#sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
-	
+	sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
 
-	#sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
+	if use udev && ! use device-mapper-only; then
+		sed -i -e '/use_lvmetad =/s:0:1:' conf/example.conf.in || die #514196
+		elog "Notice that \"use_lvmetad\" setting is enabled with USE=\"udev\" in"
+		elog "/etc/lvm/lvm.conf, which will require restart of udev, lvm, and lvmetad"
+		elog "if it was previously disabled."
+	fi
+
+	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
 	# Don't install thin man page when not requested
 	if ! use thin ; then
 		sed -i -e 's/^\(MAN7+=.*\) $(LVMTHINMAN) \(.*\)$/\1 \2/' man/Makefile.in || die
 	fi
 
-	#eautoreconf
+	eautoreconf
 }
 
 src_configure() {
@@ -126,6 +136,7 @@ src_configure() {
 		$(use_enable !device-mapper-only fsadm)
 		$(use_enable !device-mapper-only lvmetad)
 		$(use_enable !device-mapper-only lvmpolld)
+		$(usex device-mapper-only --disable-udev-systemd-background-jobs '')
 
 		# This only causes the .static versions to become available
 		$(usex static --enable-static_link '')
@@ -166,7 +177,11 @@ src_configure() {
 		--with-default-run-dir=/run/lvm
 		--with-default-locking-dir=/run/lock/lvm
 		--with-default-pid-dir=/run
+		$(use_enable udev udev_rules)
+		$(use_enable udev udev_sync)
+		$(use_with udev udevdir "$(get_udevdir)"/rules.d)
 		$(use_enable sanlock lvmlockd-sanlock)
+		$(use_enable systemd udev-systemd-background-jobs)
 		$(use_enable systemd notify-dbus)
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		CLDFLAGS="${LDFLAGS}"
@@ -207,6 +222,12 @@ src_install() {
 		newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
 		newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
 		newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
+		if ! use udev ; then
+			# We keep the variable but remove udev from it.
+			sed -r -i \
+				-e '/^rc_need=/s/\<udev\>//g' \
+				"${ED}/etc/conf.d/lvm" || die "Could not drop udev from rc_need"
+		fi
 
 		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
 		newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
@@ -250,9 +271,25 @@ pkg_postinst() {
 		ewarn "Make sure to enable lvmetad in /etc/lvm/lvm.conf if you want"
 		ewarn "to enable lvm autoactivation and metadata caching."
 	fi
+
+	if use udev && [[ -d /run ]] ; then
+		local permission_run_expected="drwxr-xr-x"
+		local permission_run=$(stat -c "%A" /run)
+		if [[ "${permission_run}" != "${permission_run_expected}" ]] ; then
+			ewarn "Found the following problematic permissions:"
+			ewarn ""
+			ewarn "    ${permission_run} /run"
+			ewarn ""
+			ewarn "Expected:"
+			ewarn ""
+			ewarn "    ${permission_run_expected} /run"
+			ewarn ""
+			ewarn "This is known to be causing problems for UDEV-enabled LVM services."
+		fi
+	fi
 }
 
-#src_test() {
-	#einfo "Tests are disabled because of device-node mucking, if you want to"
-	#einfo "run tests, compile the package and see ${S}/tests"
-#}
+src_test() {
+	einfo "Tests are disabled because of device-node mucking, if you want to"
+	einfo "run tests, compile the package and see ${S}/tests"
+}
