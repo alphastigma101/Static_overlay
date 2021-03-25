@@ -108,7 +108,7 @@ src_prepare() {
 		sed -i -e 's/^\(MAN7+=.*\) $(LVMTHINMAN) \(.*\)$/\1 \2/' man/Makefile.in || die
 	fi
 
-	eautoreconf
+	#eautoreconf
 }
 
 src_configure() {
