@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools linux-info multilib systemd toolchain-funcs udev flag-o-matic
+inherit autotools linux-info multilib systemd toolchain-funcs flag-o-matic
 
 DESCRIPTION="User-land utilities for LVM2 (device-mapper) software"
 HOMEPAGE="https://sourceware.org/lvm2/"
@@ -23,7 +23,7 @@ DEPEND_COMMON="
 	readline? ( sys-libs/readline:0= )
 	sanlock? ( sys-cluster/sanlock )
 	systemd? ( >=sys-apps/systemd-205:0= )
-	udev? ( >=virtual/libudev-208:=[static-libs(-)?] )"
+"
 # /run is now required for locking during early boot. /var cannot be assumed to
 # be available -- thus, pull in recent enough baselayout for /run.
 # This version of LVM is incompatible with cryptsetup <1.1.2.
