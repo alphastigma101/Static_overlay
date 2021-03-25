@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv s390 sparc x86 ~amd64-linux ~x86-linux"
 IUSE="readline static static-libs systemd lvm2create_initrd sanlock selinux +thin device-mapper-only"
-REQUIRED_USE="device-mapper-only? ( !lvm2create_initrd !sanlock !thin )
+REQUIRED_USE="device-mapper-only? (  )
 	systemd? (  )"
 
 DEPEND_COMMON="
