@@ -208,7 +208,7 @@ src_install() {
 		emake V=1 DESTDIR="${D}" ${inst}
 	done
 	
-	newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
+	#newinitd "${FILESDIR}"/device-mapper.rc-2.02.105-r2 device-mapper
 	newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
 	
 	if use !device-mapper-only ; then
