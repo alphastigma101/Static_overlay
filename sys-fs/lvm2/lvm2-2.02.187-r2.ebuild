@@ -207,12 +207,6 @@ src_install() {
 		newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
 		newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
 		newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
-		if ! use udev ; then
-			# We keep the variable but remove udev from it.
-			sed -r -i \
-				-e '/^rc_need=/s/\<udev\>//g' \
-				"${ED}/etc/conf.d/lvm" || die "Could not drop udev from rc_need"
-		fi
 
 		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
 		newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
