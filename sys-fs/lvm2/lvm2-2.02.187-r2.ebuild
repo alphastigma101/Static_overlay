@@ -70,13 +70,25 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.186-udev_remove_unsupported_option.patch #700160
 )
 
-# 1. Genkernel no longer copies /sbin/lvm blindly.
-if use static; then
-	elog "Warning, we no longer overwrite /sbin/lvm and /sbin/dmsetup with"
-	elog "their static versions. If you need the static binaries,"
-	elog "you must append .static to the filename!"
-fi
+pkg_setup() {
+	local CONFIG_CHECK="~SYSVIPC"
 
+		if linux_config_exists; then
+			local uevent_helper_path=$(linux_chkconfig_string UEVENT_HELPER_PATH)
+			if [[ -n "${uevent_helper_path}" ]] && [[ "${uevent_helper_path}" != '""' ]]; then
+				ewarn "It's recommended to set an empty value to the following kernel config option:"
+				ewarn "CONFIG_UEVENT_HELPER_PATH=${uevent_helper_path}"
+			fi
+		fi
+
+	check_extra_config
+
+	# 1. Genkernel no longer copies /sbin/lvm blindly.
+	if use static; then
+		elog "Warning, we no longer overwrite /sbin/lvm and /sbin/dmsetup with"
+		elog "their static versions. If you need the static binaries,"
+		elog "you must append .static to the filename!"
+	fi
 }
 
 src_prepare() {
