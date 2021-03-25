@@ -109,7 +109,7 @@ PDEPEND="
 REQUIRED_USE="!minimal? (
 		|| ( ${IUSE_SERVERS} )
 	)
-	elogind? ( udev )
+	elogind? ( )
 	?? ( elogind systemd )
 	minimal? ( !wayland )
 	xephyr? ( kdrive )"
