@@ -252,7 +252,7 @@ pkg_postinst() {
 	fi
 }
 
-src_test() {
-	einfo "Tests are disabled because of device-node mucking, if you want to"
-	einfo "run tests, compile the package and see ${S}/tests"
-}
+#src_test() {
+	#einfo "Tests are disabled because of device-node mucking, if you want to"
+	#einfo "run tests, compile the package and see ${S}/tests"
+#}
