@@ -213,7 +213,7 @@ src_install() {
 	#newconfd "${FILESDIR}"/device-mapper.conf-1.02.22-r3 device-mapper
 	
 	if use !device-mapper-only ; then
-		newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
+		#newinitd "${FILESDIR}"/dmeventd.initd-2.02.184-r2 dmeventd
 		newinitd "${FILESDIR}"/lvm.rc-2.02.187 lvm
 		newconfd "${FILESDIR}"/lvm.confd-2.02.184-r3 lvm
 		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
