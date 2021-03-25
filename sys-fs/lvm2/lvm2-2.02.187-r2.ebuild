@@ -99,6 +99,8 @@ src_prepare() {
 		make.tmpl.in || die #444082
 
 	sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
+	
+	# You deleted some stuff to do with device-mapper only. Might have to re add that back in and remove the udev.
 
 	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
@@ -125,7 +127,6 @@ src_configure() {
 		$(use_enable !device-mapper-only fsadm)
 		$(use_enable !device-mapper-only lvmetad)
 		$(use_enable !device-mapper-only lvmpolld)
-		$(usex device-mapper-only --disable-udev-systemd-background-jobs '')
 
 		# This only causes the .static versions to become available
 		$(usex static --enable-static_link '')
@@ -166,11 +167,7 @@ src_configure() {
 		--with-default-run-dir=/run/lvm
 		--with-default-locking-dir=/run/lock/lvm
 		--with-default-pid-dir=/run
-		$(use_enable udev udev_rules)
-		$(use_enable udev udev_sync)
-		$(use_with udev udevdir "$(get_udevdir)"/rules.d)
 		$(use_enable sanlock lvmlockd-sanlock)
-		$(use_enable systemd udev-systemd-background-jobs)
 		$(use_enable systemd notify-dbus)
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		CLDFLAGS="${LDFLAGS}"
@@ -259,22 +256,6 @@ pkg_postinst() {
 		ewarn
 		ewarn "Make sure to enable lvmetad in /etc/lvm/lvm.conf if you want"
 		ewarn "to enable lvm autoactivation and metadata caching."
-	fi
-
-	if use udev && [[ -d /run ]] ; then
-		local permission_run_expected="drwxr-xr-x"
-		local permission_run=$(stat -c "%A" /run)
-		if [[ "${permission_run}" != "${permission_run_expected}" ]] ; then
-			ewarn "Found the following problematic permissions:"
-			ewarn ""
-			ewarn "    ${permission_run} /run"
-			ewarn ""
-			ewarn "Expected:"
-			ewarn ""
-			ewarn "    ${permission_run_expected} /run"
-			ewarn ""
-			ewarn "This is known to be causing problems for UDEV-enabled LVM services."
-		fi
 	fi
 }
 
