@@ -91,8 +91,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-	#default
-	eapply_user
+	default
+	#eapply_user
 
 	sed -i \
 		-e "1iAR = $(tc-getAR)" \
