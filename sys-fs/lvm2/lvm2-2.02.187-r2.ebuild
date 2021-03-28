@@ -92,7 +92,6 @@ pkg_setup() {
 
 src_prepare() {
 	default
-	#eapply_user
 
 	sed -i \
 		-e "1iAR = $(tc-getAR)" \
@@ -100,15 +99,6 @@ src_prepare() {
 		make.tmpl.in || die #444082
 
 	sed -i -e '/FLAG/s:-O2::' configure{.ac,} || die #480212
-
-	if use udev && ! use device-mapper-only; then
-		sed -i -e '/use_lvmetad =/s:0:1:' conf/example.conf.in || die #514196
-		elog "Notice that \"use_lvmetad\" setting is enabled with USE=\"udev\" in"
-		elog "/etc/lvm/lvm.conf, which will require restart of udev, lvm, and lvmetad"
-		elog "if it was previously disabled."
-	fi
-
-	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
 	# Don't install thin man page when not requested
 	if ! use thin ; then
@@ -133,7 +123,6 @@ src_configure() {
 		$(use_enable !device-mapper-only fsadm)
 		$(use_enable !device-mapper-only lvmetad)
 		$(use_enable !device-mapper-only lvmpolld)
-		$(usex device-mapper-only --disable-udev-systemd-background-jobs '')
 
 		# This only causes the .static versions to become available
 		$(usex static --enable-static_link '')
