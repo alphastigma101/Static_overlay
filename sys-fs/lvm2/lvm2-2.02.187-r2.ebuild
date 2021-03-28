@@ -12,7 +12,7 @@ SRC_URI="ftp://sourceware.org/pub/lvm2/${PN/lvm/LVM}.${PV}.tgz
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="readline static static-libs systemd lvm2create_initrd sanlock selinux +udev +thin device-mapper-only"
+IUSE="readline +static static-libs systemd lvm2create_initrd sanlock selinux +thin device-mapper-only"
 REQUIRED_USE="device-mapper-only? ( !lvm2create_initrd !sanlock !thin )
 	systemd? ( )"
 
@@ -175,7 +175,6 @@ src_configure() {
 		--with-default-locking-dir=/run/lock/lvm
 		--with-default-pid-dir=/run
 		$(use_enable sanlock lvmlockd-sanlock)
-		$(use_enable systemd udev-systemd-background-jobs)
 		$(use_enable systemd notify-dbus)
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		CLDFLAGS="${LDFLAGS}"
